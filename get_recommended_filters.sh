@@ -1,3 +1,49 @@
 #!/bin/bash
 
-node download_lists.js blocklist
+# create an empty input.csv file
+touch input.csv
+
+# declare an array of urls
+urls=(
+  https://raw.githubusercontent.com/bigdargon/hostsVN/master/option/hosts-VN
+  #link above is blocking VN-only
+  #https://raw.githubusercontent.com/bigdargon/hostsVN/master/option/domain.txt
+  #https://raw.githubusercontent.com/bigdargon/hostsVN/master/hosts
+  #https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+  #https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/light.txt
+  #https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt
+  https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.txt
+  #https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+  
+  #personal config
+  #https://raw.githubusercontent.com/mullvad/dns-blocklists/main/output/doh/doh_privacy.txt
+  #https://raw.githubusercontent.com/mullvad/dns-blocklists/main/output/doh/doh_gambling.txt
+  #https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareHosts.txt
+  https://gist.githubusercontent.com/fism/6d4110774f3afda5f43640d4c75cfccd/raw/2550b923ec94b5e66e5bb67ca11165f1455f11ca/win-trackers.txt
+
+  #threat, not include in pro, pro++, ultimate of hagezi's filter
+  https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt
+  
+  #torrent Trackers
+  https://raw.githubusercontent.com/ngosang/trackerslist/master/blacklist.txt
+  
+  #Control VPN
+  https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/doh-vpn-proxy-bypass.txt
+  https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt
+)
+
+# loop through the urls and download each file with curl
+for url in "${urls[@]}"; do
+  # get the file name from the url
+  file=$(basename "$url")
+  # download the file with curl and save it as file.txt
+  curl -o "$file.txt" "$url"
+  # append the file contents to input.csv and add a newline
+  cat "$file.txt" >> input.csv
+  echo "" >> input.csv
+  # remove the file.txt
+  rm "$file.txt"
+done
+
+# print a message when done
+echo "Done. The input.csv file contains merged data from recommended filter lists."
